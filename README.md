@@ -70,7 +70,7 @@ antigen bundle gko/brick
 ## Usage
 
 ```
-Usage: brick [command] [target] [branch] [flags]
+Usage: brick [command] [target] [flags]
 
 Commands:
   install, i, add     Install a brick (run empty to init all missing)
@@ -80,14 +80,15 @@ Commands:
 
 Flags:
   -y, --yes           Skip confirmation prompts (dirty checks/deletions)
+  -b, --branch        Specify a target branch (e.g., -b dev)
 
 Example:
   brick install gko/postfix           # Install a brick from GitHub
-  brick install                      # Install all missing bricks
-  brick update -y                    # Update all bricks without prompts
-  brick update my-brick main         # Update 'my-brick' to the 'main' branch
-  brick rm ghost-theme               # Remove the 'ghost-theme' brick
-  brick ls                          # List all installed bricks
+  brick install                       # Install all missing bricks
+  brick update -y                     # Update all bricks without prompts
+  brick update my-brick main          # Update 'my-brick' to the 'main' branch
+  brick rm ghost-theme                # Remove the 'ghost-theme' brick
+  brick ls                            # List all installed bricks
 ```
 
 ## License
