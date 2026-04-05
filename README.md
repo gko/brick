@@ -16,7 +16,22 @@
 
 ## Installation
 
-### Manual
+### Quick Start (One-liner)
+
+Run this to download `brick` and add it to your shell configuration:
+
+```shell
+curl -sLo ~/.brick.sh https://raw.githubusercontent.com/gko/brick/main/brick.sh
+echo 'source ~/.brick.sh' >> ~/.zshrc # or ~/.bashrc
+```
+
+For Zsh users, you can also install the completion script:
+```shell
+mkdir -p ~/.zsh/completions
+curl -sLo ~/.zsh/completions/_brick https://raw.githubusercontent.com/gko/brick/main/_brick
+```
+
+### Manual Installation
 
 1. Clone this repository or download the `brick.sh` script.
 ```shell
