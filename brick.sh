@@ -170,7 +170,7 @@ brick() {
             git -C "$repo_root" submodule update --init --recursive --remote --force "$folder"
 
             # ACTIVE CHECKOUT: Ensure the specific submodule is on its tracked branch
-            local checkout_branch="$branch"
+            local checkout_branch="$target_branch"
 
             if [ -z "$checkout_branch" ]; then
                 checkout_branch=$(git -C "$repo_root" config --file .gitmodules --get "submodule.$folder.branch")
