@@ -1,6 +1,6 @@
 # brick — A Git Submodule Package Manager
 
-![tests](https://github.com/gko/brick/workflows/test.yml/badge.svg)
+![tests](https://github.com/gko/brick/actions/workflows/test.yml/badge.svg)
 
 `brick` is a frictionless wrapper for Git Submodules. It simplifies the process of adding, updating, and removing submodules, treating them as "bricks" that you can easily plug into your project.
 
