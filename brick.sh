@@ -14,8 +14,13 @@ brick() {
                 shift
                 ;;
             -b|--branch)
-                target_branch="$2"
-                shift 2
+                if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                    target_branch="$2"
+                    shift 2
+                else
+                    echo "❌ Error: --branch requires a branch name."
+                    return 1
+                fi
                 ;;
             -h|--help)
                 echo "Brick - The Git Submodule Package Manager"
