@@ -120,7 +120,7 @@ brick() {
                             fi
                         fi
                     fi
-                    git -C "$repo_root/$sub" checkout "$checkout_branch" >/dev/null 2>&1
+                    git -C "$repo_root/$sub" checkout -B "$checkout_branch" "origin/$checkout_branch" >/dev/null 2>&1
                 done
 
                 git -C "$repo_root" add .gitmodules
@@ -177,7 +177,7 @@ brick() {
                 fi
             fi
 
-            git -C "$repo_root/$folder" checkout "$checkout_branch" >/dev/null 2>&1
+            git -C "$repo_root/$folder" checkout -B "$checkout_branch" "origin/$checkout_branch" >/dev/null 2>&1
 
             git -C "$repo_root" add "$folder" .gitmodules
             echo "✅ $folder updated."

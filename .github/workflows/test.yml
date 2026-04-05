@@ -23,3 +23,5 @@ jobs:
         run: |
           chmod +x tests/test_brick.sh
           ./tests/test_brick.sh
+          chmod +x tests/test_active_checkout.sh
+          ./tests/test_active_checkout.sh
