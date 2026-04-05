@@ -33,8 +33,13 @@ brick() {
         esac
     done
 
-    local action=${args[0]}
-    local target=${args[1]}
+    # --- SHELL COMPATIBILITY FIX ---
+    # Reassign the remaining arguments to standard positional parameters ($1, $2, $3)
+    # This prevents the Bash (0-based) vs Zsh (1-based) array index bug.
+    set -- "${args[@]}"
+    local action=$1
+    local target=$2
+    local dest_path=$3
 
     case $action in
         # ==========================================
@@ -61,7 +66,13 @@ brick() {
                 repo_url="https://github.com/$target.git"
             fi
 
-            local folder=$(basename "$target" .git)
+            # --- CUSTOM PATH FIX ---
+            local folder
+            if [ -n "$dest_path" ]; then
+                folder="${dest_path%/}" # Use custom path, strip trailing slash
+            else
+                folder=$(basename "$target" .git) # Fallback to default name
+            fi
             local abs_folder="$repo_root/$folder"
 
             local pass_y=""
@@ -138,8 +149,16 @@ brick() {
                 return 0
             fi
 
-            # SPECIFIC UPDATE
-            local folder=$(basename "$target" .git)
+            # SPECIFIC UPDATE 
+            # --- CUSTOM PATH FIX ---
+            # If the user typed the exact folder path (e.g., services/tunnel), use it.
+            local folder
+            if [ -d "$repo_root/${target%/}" ]; then
+                folder="${target%/}"
+            else
+                folder=$(basename "$target" .git)
+            fi
+            
             local abs_folder="$repo_root/$folder"
 
             if [ -d "$abs_folder" ]; then
@@ -202,7 +221,14 @@ brick() {
                 return 1
             fi
 
-            local folder=$(basename "$target" .git)
+            # --- CUSTOM PATH FIX ---
+            local folder
+            if [ -d "$repo_root/${target%/}" ]; then
+                folder="${target%/}"
+            else
+                folder=$(basename "$target" .git)
+            fi
+            
             local abs_folder="$repo_root/$folder"
 
             if [ ! -d "$abs_folder" ]; then
@@ -274,8 +300,9 @@ brick() {
             echo ""
             echo "Usage Examples:"
             echo "  brick install gko/postfix"
+            echo "  brick install zametka/tunnel services/tunnel"
             echo "  brick install gko/postfix -b v2.0"
-            echo "  brick update ghost-theme -b experimental"
+            echo "  brick update services/tunnel"
             echo "  brick rm ghost-theme -y"
             ;;
     esac
