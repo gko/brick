@@ -2,15 +2,6 @@
 # A frictionless wrapper for Git Submodules
 
 brick() {
-    # Find the root of the current git repository
-    local repo_root
-    repo_root=$(git -C "${PWD}" rev-parse --show-toplevel 2>/dev/null)
-
-    if [ -z "$repo_root" ]; then
-        echo "❌ Error: You must be inside a Git repository to use bricks."
-        return 1
-    fi
-
     # Parse arguments and flags
     local skip_prompt=false
     local target_branch=""
@@ -26,6 +17,28 @@ brick() {
                 target_branch="$2"
                 shift 2
                 ;;
+            -h|--help)
+                echo "Brick - The Git Submodule Package Manager"
+                echo ""
+                echo "Commands:"
+                echo "  install, i, add     Install a brick (run empty to init all missing)"
+                echo "  update, up, upgrade Update a brick (run empty to update all)"
+                echo "  delete, rm, remove  Safely purge a brick from the repository"
+                echo "  list, ls            List all installed bricks"
+                echo ""
+                echo "Flags:"
+                echo "  -y, --yes           Skip confirmation prompts (dirty checks/deletions)"
+                echo "  -b, --branch        Specify a target branch (e.g., -b dev)"
+                echo "  -h, --help          Show this help menu"
+                echo ""
+                echo "Usage Examples:"
+                echo "  brick install gko/postfix"
+                echo "  brick install zametka/tunnel services/tunnel"
+                echo "  brick install gko/postfix -b v2.0"
+                echo "  brick update services/tunnel"
+                echo "  brick rm ghost-theme -y"
+                return 0
+                ;;
             *)
                 args+=("$1")
                 shift
@@ -34,12 +47,30 @@ brick() {
     done
 
     # --- SHELL COMPATIBILITY FIX ---
-    # Reassign the remaining arguments to standard positional parameters ($1, $2, $3)
-    # This prevents the Bash (0-based) vs Zsh (1-based) array index bug.
     set -- "${args[@]}"
     local action=$1
     local target=$2
     local dest_path=$3
+
+    if [ -z "$action" ]; then
+        brick -h
+        return 0
+    fi
+
+    if [[ "$action" =~ ^(install|i|add|update|up|upgrade|delete|rm|remove|uninstall|list|ls)$ ]]; then
+        local repo_root
+        repo_root=$(git -C "${PWD}" rev-parse --show-toplevel 2>/dev/null)
+        if [ -z "$repo_root" ]; then
+            echo "❌ Error: You must be inside a Git repository to use bricks."
+            return 1
+        fi
+    else
+        brick -h
+        return 0
+    fi
+
+    local repo_root
+    repo_root=$(git -C "${PWD}" rev-parse --show-toplevel 2>/dev/null)
 
     case $action in
         # ==========================================
