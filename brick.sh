@@ -11,20 +11,30 @@ brick() {
         return 1
     fi
 
-    # Parse arguments for -y / --yes flag
+    # Parse arguments and flags
     local skip_prompt=false
+    local target_branch=""
     local args=()
-    for arg in "$@"; do
-        if [[ "$arg" == "-y" || "$arg" == "--yes" ]]; then
-            skip_prompt=true
-        else
-            args+=("$arg")
-        fi
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -y|--yes)
+                skip_prompt=true
+                shift
+                ;;
+            -b|--branch)
+                target_branch="$2"
+                shift 2
+                ;;
+            *)
+                args+=("$1")
+                shift
+                ;;
+        esac
     done
 
     local action=${args[0]}
     local target=${args[1]}
-    local branch=${args[2]}
 
     case $action in
         # ==========================================
@@ -59,9 +69,9 @@ brick() {
 
             if [ -d "$abs_folder" ]; then
                 echo "💡 Brick '$folder' is already installed."
-                if [ -n "$branch" ]; then
-                    echo "   Redirecting to switch branch to '$branch'..."
-                    brick $pass_y update "$folder" "$branch"
+                if [ -n "$target_branch" ]; then
+                    echo "   Redirecting to switch branch to '$target_branch'..."
+                    brick $pass_y update "$folder" -b "$target_branch"
                 else
                     echo "   Redirecting to update..."
                     brick $pass_y update "$folder"
@@ -69,9 +79,9 @@ brick() {
                 return 0
             fi
 
-            if [ -n "$branch" ]; then
-                echo "📦 Installing brick into $folder (Branch: $branch)..."
-                git -C "$repo_root" submodule add -b "$branch" "$repo_url" "$folder"
+            if [ -n "$target_branch" ]; then
+                echo "📦 Installing brick into $folder (Branch: $target_branch)..."
+                git -C "$repo_root" submodule add -b "$target_branch" "$repo_url" "$folder"
             else
                 echo "📦 Installing brick into $folder..."
                 git -C "$repo_root" submodule add "$repo_url" "$folder"
@@ -150,9 +160,9 @@ brick() {
                 return 1
             fi
 
-            if [ -n "$branch" ]; then
-                echo "🔄 Switching '$folder' to branch '$branch'..."
-                git -C "$repo_root" config -f .gitmodules submodule."$folder".branch "$branch"
+            if [ -n "$target_branch" ]; then
+                echo "🔄 Switching '$folder' to branch '$target_branch'..."
+                git -C "$repo_root" config -f .gitmodules submodule."$folder".branch "$target_branch"
             else
                 echo "🔄 Updating brick: $folder..."
             fi
@@ -260,11 +270,13 @@ brick() {
             echo ""
             echo "Flags:"
             echo "  -y, --yes           Skip confirmation prompts (dirty checks/deletions)"
+            echo "  -b, --branch        Specify a target branch (e.g., -b dev)"
             echo ""
             echo "Usage Examples:"
             echo "  brick install gko/postfix"
-            echo "  brick update -y"
-            echo "  brick rm ghost-theme"
+            echo "  brick install gko/postfix -b v2.0"
+            echo "  brick update ghost-theme -b experimental"
+            echo "  brick rm ghost-theme -y"
             ;;
     esac
 }
