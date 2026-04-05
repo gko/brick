@@ -149,7 +149,7 @@ brick() {
                 return 0
             fi
 
-            # SPECIFIC UPDATE 
+            # SPECIFIC UPDATE
             # --- CUSTOM PATH FIX ---
             # If the user typed the exact folder path (e.g., services/tunnel), use it.
             local folder
@@ -158,7 +158,7 @@ brick() {
             else
                 folder=$(basename "$target" .git)
             fi
-            
+
             local abs_folder="$repo_root/$folder"
 
             if [ -d "$abs_folder" ]; then
@@ -228,7 +228,7 @@ brick() {
             else
                 folder=$(basename "$target" .git)
             fi
-            
+
             local abs_folder="$repo_root/$folder"
 
             if [ ! -d "$abs_folder" ]; then
@@ -274,12 +274,12 @@ brick() {
                  echo "No bricks found."
             else
                 for sub in $submodules; do
-                    local path=$(git -C "$repo_root" config --file .gitmodules --get "submodule.$sub.path")
+                    local sub_path=$(git -C "$repo_root" config --file .gitmodules --get "submodule.$sub.path")
                     local url=$(git -C "$repo_root" config --file .gitmodules --get "submodule.$sub.url")
                     local sub_branch=$(git -C "$repo_root" config --file .gitmodules --get "submodule.$sub.branch")
 
                     if [ -z "$sub_branch" ]; then sub_branch="(default)"; fi
-                    printf "%-20s %-15s %-45s\n" "$path" "$sub_branch" "$url"
+                    printf "%-20s %-15s %-45s\n" "$sub_path" "$sub_branch" "$url"
                 done
             fi
             echo "---------------------------------------------------------------------------------"
