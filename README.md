@@ -2,8 +2,6 @@
 
 `brick` is a frictionless wrapper for Git Submodules. It simplifies the process of adding, updating, and removing submodules, treating them as "bricks" that you can easily plug into your project.
 
-It's hosted at: https://github.com/gko/brick
-
 ## Features
 
 * **Simple Installation**: Add new submodules (bricks) using a simple shorthand.
