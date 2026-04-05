@@ -25,3 +25,5 @@ jobs:
           ./tests/test_brick.sh
           chmod +x tests/test_active_checkout.sh
           ./tests/test_active_checkout.sh
+          chmod +x tests/test_zsh_compat.sh
+          ./tests/test_zsh_compat.sh
