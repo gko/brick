@@ -115,7 +115,8 @@ brick() {
                     local dirty_modules=$(git -C "$repo_root" submodule foreach --quiet 'git status --porcelain' | wc -l)
                     if [ "$dirty_modules" -gt 0 ]; then
                         echo "⚠️  WARNING: One or more bricks have uncommitted local changes!"
-                        read -p "Proceeding will OVERWRITE local tweaks. Force update all? (y/N): " confirm
+                        printf "Proceeding will OVERWRITE local tweaks. Force update all? (y/N): "
+                        read -r confirm
                         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
                             echo "❌ Global update aborted."
                             return 1
@@ -167,7 +168,8 @@ brick() {
                     if [ -n "$is_dirty" ]; then
                         echo "⚠️  WARNING: The brick '$folder' has uncommitted local changes!"
                         echo "$is_dirty"
-                        read -p "Force update anyway? (y/N): " confirm
+                        printf "Force update anyway? (y/N): "
+                        read -r confirm
                         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
                             echo "❌ Update aborted."
                             return 1
@@ -237,7 +239,8 @@ brick() {
             fi
 
             if [ "$skip_prompt" = false ]; then
-                read -p "⚠️  Are you sure you want to permanently delete the brick '$folder'? (y/N): " confirm
+                printf "⚠️  Are you sure you want to permanently delete the brick '%s'? (y/N): " "$folder"
+                read -r confirm
                 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
                     echo "❌ Deletion aborted."
                     return 1
