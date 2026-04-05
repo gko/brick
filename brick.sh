@@ -37,7 +37,7 @@ brick() {
                     echo "📦 No bricks to install (missing .gitmodules)."
                     return 0
                 fi
-                echo "📦 Installing all missing bricks..."
+                echo "📦 Synchronizing bricks..."
                 git -C "$repo_root" submodule update --init --recursive
                 echo "✅ All bricks installed."
                 return 0
@@ -54,14 +54,17 @@ brick() {
             local folder=$(basename "$target" .git)
             local abs_folder="$repo_root/$folder"
 
+            local pass_y=""
+            if [ "$skip_prompt" = true ]; then pass_y="-y"; fi
+
             if [ -d "$abs_folder" ]; then
                 echo "💡 Brick '$folder' is already installed."
                 if [ -n "$branch" ]; then
                     echo "   Redirecting to switch branch to '$branch'..."
-                    brick update "$folder" "$branch" $skip_prompt_flag
+                    brick $pass_y update "$folder" "$branch"
                 else
                     echo "   Redirecting to update..."
-                    brick update "$folder" $skip_prompt_flag
+                    brick $pass_y update "$folder"
                 fi
                 return 0
             fi
@@ -101,6 +104,25 @@ brick() {
 
                 echo "🔄 Updating all bricks to their latest tracking commits..."
                 git -C "$repo_root" submodule update --init --recursive --remote --force
+
+                # ACTIVE CHECKOUT: Ensure all submodules are on their tracked branches
+                local submodules=$(git -C "$repo_root" config --file .gitmodules --get-regexp path | awk '{ print $1 }' | sed 's/submodule\.//' | sed 's/\.path//')
+                for sub in $submodules; do
+                    local checkout_branch=$(git -C "$repo_root" config --file .gitmodules --get "submodule.$sub.branch")
+
+                    if [ -z "$checkout_branch" ]; then
+                        checkout_branch=$(git -C "$repo_root/$sub" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+                        if [ -z "$checkout_branch" ]; then
+                            if git -C "$repo_root/$sub" show-ref --verify --quiet refs/heads/main; then
+                                checkout_branch="main"
+                            else
+                                checkout_branch="master"
+                            fi
+                        fi
+                    fi
+                    git -C "$repo_root/$sub" checkout "$checkout_branch" >/dev/null 2>&1
+                done
+
                 git -C "$repo_root" add .gitmodules
                 echo "✅ All bricks updated."
                 return 0
@@ -136,6 +158,27 @@ brick() {
             fi
 
             git -C "$repo_root" submodule update --init --recursive --remote --force "$folder"
+
+            # ACTIVE CHECKOUT: Ensure the specific submodule is on its tracked branch
+            local checkout_branch="$branch"
+
+            if [ -z "$checkout_branch" ]; then
+                checkout_branch=$(git -C "$repo_root" config --file .gitmodules --get "submodule.$folder.branch")
+            fi
+
+            if [ -z "$checkout_branch" ]; then
+                checkout_branch=$(git -C "$repo_root/$folder" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+                if [ -z "$checkout_branch" ]; then
+                    if git -C "$repo_root/$folder" show-ref --verify --quiet refs/heads/main; then
+                        checkout_branch="main"
+                    else
+                        checkout_branch="master"
+                    fi
+                fi
+            fi
+
+            git -C "$repo_root/$folder" checkout "$checkout_branch" >/dev/null 2>&1
+
             git -C "$repo_root" add "$folder" .gitmodules
             echo "✅ $folder updated."
             ;;
