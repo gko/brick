@@ -9,6 +9,7 @@
 * **Simple Installation**: Add new submodules (bricks) using a simple shorthand.
 * **Global Init**: Install all missing bricks defined in `.gitmodules` with a single command.
 * **Smart Updates**: Update specific bricks or all of them to their latest tracking commits.
+* **Branch Tracking**: Automatically keeps bricks on their tracked branches after updates, avoiding detached HEAD states.
 * **Safe Removal**: Cleanly purge a brick from the repository, including its internal git metadata.
 * **Quick Overview**: List all installed bricks, their current branches, and remote URLs in a clean table.
 * **Automation Friendly**: Use the `-y` or `--yes` flag to skip confirmation prompts for dirty checks and deletions.
