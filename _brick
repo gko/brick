@@ -1,0 +1,47 @@
+#compdef brick
+
+_brick() {
+    local line state
+    local -a commands installed_bricks
+
+    commands=(
+        'install:Install a new brick (Aliases: i, add)'
+        'update:Update an existing brick (Aliases: up, upgrade)'
+        'delete:Remove a brick (Aliases: rm, remove, uninstall)'
+        'list:List all installed bricks (Aliases: ls)'
+    )
+
+    _arguments -C \
+        '(-y --yes)'{-y,--yes}'[Skip confirmation prompts]' \
+        '1: :->cmds' \
+        '2: :->args' \
+        '3: :->branch'
+
+    case "$state" in
+        cmds)
+            _describe -t commands 'brick commands' commands
+            ;;
+
+        args)
+            # Match any of the aliases
+            case $words[2] in
+                update|up|upgrade|delete|rm|remove|uninstall)
+                    local repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+                    if [[ -n "$repo_root" && -f "$repo_root/.gitmodules" ]]; then
+                        installed_bricks=($(git -C "$repo_root" config --file .gitmodules --get-regexp path | awk '{print $2}'))
+                        _describe -t installed_bricks 'installed bricks' installed_bricks
+                    fi
+                    ;;
+                install|i|add)
+                    _message "repository (e.g., gko/postfix) or Git URL (Leave blank to install all missing)"
+                    ;;
+            esac
+            ;;
+
+        branch)
+            _message "branch name (optional)"
+            ;;
+    esac
+}
+
+_brick "$@"
