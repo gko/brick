@@ -45,7 +45,7 @@ brick() {
 
             # SPECIFIC INSTALL
             local repo_url
-            if [[ "$target" =~ ^https?:// ]] || [[ "$target" =~ ^git@ ]]; then
+            if [[ "$target" =~ ^https?:// ]] || [[ "$target" =~ ^git@ ]] || [[ "$target" =~ ^/ ]] || [[ "$target" =~ ^\.\/ ]]; then
                 repo_url="$target"
             else
                 repo_url="https://github.com/$target.git"
